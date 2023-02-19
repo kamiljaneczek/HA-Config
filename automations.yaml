@@ -1,0 +1,190 @@
+- id: '1620510026147'
+  alias: Wlacz swiatla ogrodowe
+  description: ''
+  trigger:
+  - platform: sun
+    event: sunset
+    offset: 00:30:00
+  condition: []
+  action:
+  - service: switch.turn_on
+    target:
+      entity_id: switch.shelly_shsw_25_98f4abf2e8d8_2
+  - service: switch.turn_on
+    target:
+      entity_id: switch.shelly_shsw_25_98f4abf2e8d8_1
+  mode: single
+- id: '1620510112368'
+  alias: Wylacz swiatla ogrodowe
+  description: ''
+  trigger:
+  - platform: time
+    at: '20:20:00'
+  condition: []
+  action:
+  - service: switch.turn_off
+    target:
+      entity_id: switch.shelly_shsw_25_98f4abf2e8d8_1
+    data: {}
+  mode: single
+- id: '1620510210786'
+  alias: Wlacz wentylator lazienka dol
+  description: ''
+  trigger:
+  - platform: time_pattern
+    hours: /8
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 4c14c5939bf9e76972c7efa36363c801
+    entity_id: switch.shelly_shsw_1_e8db84d71cb6
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: 4c14c5939bf9e76972c7efa36363c801
+    entity_id: switch.shelly_shsw_1_e8db84d71cb6
+    domain: switch
+  mode: single
+- id: '1620512009857'
+  alias: Wlacz wentylator lazienka gora
+  description: ''
+  trigger:
+  - platform: time_pattern
+    hours: /8
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 5778a99458f7223d2768ef98da2d4d7a
+    entity_id: switch.shelly_shsw_1_e8db84d723a5
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 8
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: 5778a99458f7223d2768ef98da2d4d7a
+    entity_id: switch.shelly_shsw_1_e8db84d723a5
+    domain: switch
+  mode: single
+- id: '1623703875284'
+  alias: Wlacz swiatlo kuchnia
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.activity_in_kuchnia
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: sun
+    after: sunset
+  action:
+  - service: switch.turn_on
+    target:
+      entity_id: switch.shelly_shsw_1_e2c4a1
+  mode: single
+- id: '1626869320237'
+  alias: Wyzwalanie z webhooka
+  description: ''
+  trigger:
+  - platform: webhook
+    webhook_id: testhook
+    id: testhook
+  condition: []
+  action:
+  - service: light.turn_on
+    target:
+      entity_id: light.shelly_shrgbw2_80eb13
+  mode: single
+- id: '1628406251949'
+  alias: Power state on HA start-up
+  trigger:
+    platform: homeassistant
+    event: start
+  action:
+  - service: mqtt.publish
+    data:
+      topic: sonoffs/cmnd/state
+      payload: ''
+- id: '1633453946987'
+  alias: Wlacz pompe oczyszczalnia
+  description: ''
+  trigger:
+  - platform: time
+    at: 00:02
+  - platform: time
+    at: 05:52
+  - platform: time
+    at: '11:52'
+  - platform: time
+    at: '17:52'
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 71839f5e40944c2b986d28a2c2057772
+    entity_id: switch.shelly_shsw_1_8caab54bdf21
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 12
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: 71839f5e40944c2b986d28a2c2057772
+    entity_id: switch.shelly_shsw_1_8caab54bdf21
+    domain: switch
+  mode: single
+- id: '1666439905254'
+  alias: Wlacz wentylator kanaliza
+  description: ''
+  trigger:
+  - platform: time
+    at: '12:18:00'
+  - platform: time
+    at: '18:18:00'
+  - platform: time
+    at: 00:18:00
+  - platform: time
+    at: 06:12:00
+  - platform: time
+    at: '14:24:00'
+  condition: []
+  action:
+  - service: switch.turn_on
+    data: {}
+    target:
+      entity_id: switch.shelly_shsw_1_98cdac1e2095
+  mode: single
+- id: '1670150765140'
+  alias: Wlacz swiatelka
+  description: ''
+  trigger:
+  - platform: time
+    at: '16:30:00'
+  condition:
+  - condition: state
+    entity_id: input_boolean.swiatelka_choinkowe
+    state: 'on'
+  action:
+  - service: switch.turn_on
+    data: {}
+    target:
+      device_id:
+      - c8656e54c722e90ad7259a334a8c0ba0
+      - 8e5594ba1db0193df8530cee46cc8367
+  - delay:
+      hours: 5
+      minutes: 0
+      seconds: 0
+      milliseconds: 0
+  - service: switch.turn_off
+    data: {}
+    target:
+      device_id:
+      - c8656e54c722e90ad7259a334a8c0ba0
+      - 8e5594ba1db0193df8530cee46cc8367
+  mode: single

@@ -1,0 +1,148 @@
+wylacz_alarm:
+  alias: wylacz alarm
+  sequence:
+  - service: alarm_control_panel.alarm_disarm
+    target:
+      entity_id:
+      - alarm_control_panel.garaz
+    data:
+      code: '1111'
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - service: alarm_control_panel.alarm_disarm
+    data:
+      code: '1111'
+    target:
+      entity_id: alarm_control_panel.parter
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - service: alarm_control_panel.alarm_disarm
+    data:
+      code: '1111'
+    target:
+      entity_id: alarm_control_panel.pietro
+  - service: notify.notify
+    data:
+      message: Alarm wyłączony
+  mode: parallel
+  max: 10
+wlacz_alarm:
+  alias: Wlacz alarm
+  sequence:
+  - service: alarm_control_panel.alarm_arm_away
+    data:
+      code: '1111'
+    target:
+      entity_id:
+      - alarm_control_panel.garaz
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - service: alarm_control_panel.alarm_arm_away
+    data:
+      code: '1111'
+    target:
+      entity_id: alarm_control_panel.parter
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - service: alarm_control_panel.alarm_arm_away
+    data:
+      code: '1111'
+    target:
+      entity_id: alarm_control_panel.pietro
+  - service: notify.notify
+    data:
+      message: Alarm wlaczony
+  mode: parallel
+  max: 10
+uruchom_brame:
+  sequence:
+  - service: switch.toggle
+    target:
+      entity_id: switch.shelly_shsw_1_b8ddf9
+  - service: notify.notify
+    data:
+      message: Brama garażowa uruchomiona
+  - service: persistent_notification.create
+    data:
+      message: Brama garażowa uruchomiona
+  mode: parallel
+  alias: Uruchom brame garaz
+  max: 10
+'1623676338317':
+  alias: Uruchom furtke
+  sequence:
+  - service: switch.toggle
+    target:
+      entity_id: switch.shelly_shsw_1_b9617e
+  - service: notify.notify
+    data:
+      message: Otwarto furtkę
+  - service: persistent_notification.create
+    data:
+      message: Otwarto furtkę
+  mode: parallel
+  max: 10
+'1623676366012':
+  alias: Uruchom brame wjazdowa
+  sequence:
+  - service: switch.toggle
+    target:
+      entity_id: switch.shelly_shsw_1_e8db84aae53d
+  - service: notify.notify
+    data:
+      message: Brama wjazdowa uruchomiona
+  - service: persistent_notification.create
+    data:
+      message: Brama wjazdowa uruchomiona
+  mode: parallel
+  max: 10
+symulacjaobecnosci_wlacz:
+  alias: SymulacjaObecnosci_Wlacz
+  sequence:
+  - service: presence_simulation.start
+    data:
+      entity_id: group.presencesimulation
+  mode: single
+symulacjaobecnosci_wylacz:
+  alias: SymulacjaObecnosci_Wylacz
+  sequence:
+  - service: presence_simulation.stop
+  mode: single
+wracamy_do_domu:
+  sequence:
+  - service: script.wylacz_alarm
+  - service: script.wlacz_swiatla_po_zmroku
+  - service: script.1623676366012
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - service: script.uruchom_brame
+  mode: single
+  alias: Wracamy do domu
+wlacz_swiatla_po_zmroku:
+  alias: Wlacz swiatla po zmroku
+  sequence:
+  - condition: sun
+    after: sunset
+  - service: switch.turn_on
+    target:
+      entity_id:
+      - switch.shelly_shsw_1_e2c4a1
+      - switch.shelly_shsw_1_b969f9
+      - switch.shelly_shsw_1_e2c6fa
+  mode: queued
+  max: 10

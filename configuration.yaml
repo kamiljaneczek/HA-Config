@@ -1,0 +1,199 @@
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+binary_sensor:
+  - platform: hikvision
+    host: 192.168.0.23
+    port: 80
+    ssl: false
+    username: admin
+    password: passwod
+    customize:
+      motion:
+        delay: 30
+      line_crossing:
+        ignored: true
+
+template:
+  - binary_sensor:    
+    - name: "activity_in_kuchnia"
+      state: "{{ is_state('binary_sensor.kuchnia', 'on')}}"
+      delay_off: "00:01:00"
+      device_class: motion
+    - name: "activity_in_gabinet"
+      state: "{{ is_state('binary_sensor.gabinet', 'on')}}"
+      delay_off: "00:01:00"
+      device_class: motion
+    - name: "activity_in_wejscie"
+      state: "{{ is_state('binary_sensor.wejscie', 'on')}}"
+      delay_off: "00:01:00"
+      device_class: motion
+    - name: "activity_in_living_room"
+      state: "{{ is_state('binary_sensor.salon', 'on') or is_state('binary_sensor.salon2', 'on')}}"
+      delay_off: "00:01:00"
+      device_class: motion
+    - name: "motion_detected_dol"
+      state: "{{ is_state('binary_sensor.activity_in_living_room', 'on') or is_state('binary_sensor.activity_in_kuchnia', 'on') or is_state('binary_sensor.activity_in_gabinet', 'on') or is_state('binary_sensor.activity_in_wejscie', 'on')}}"
+      device_class: motion
+    - name: "motion_detected_in_last_hour_dol"
+      state: "{{ is_state('binary_sensor.motion_detected_dol', 'on') }}"
+      device_class: motion
+      delay_off: "01:00:00"
+    - name: "motion_detected_in_10_minutes_dol"
+      state: "{{ is_state('binary_sensor.motion_detected_dol', 'on') }}"
+      device_class: motion
+      delay_off: "00:10:00"
+    - name: "activity_in_pok1p"
+      state: "{{ is_state('binary_sensor.pok1p', 'on')}}"
+      delay_off: "00:01:00"
+      device_class: motion
+    - name: "activity_in_pokStasia"
+      state: "{{ is_state('binary_sensor.pokStasia', 'on')}}"
+      delay_off: "00:01:00"
+      device_class: motion
+    - name: "activity_in_sypialnia"
+      state: "{{ is_state('binary_sensor.sypialnia', 'on')}}"
+      delay_off: "00:01:00"
+      device_class: motion
+    - name: "motion_detected_gora"
+      state: "{{ is_state('binary_sensor.activity_in_pok1p', 'on') or is_state('binary_sensor.activity_in_pokStasia', 'on') or is_state('binary_sensor.activity_in_sypialnia', 'on')}}"
+      device_class: motion
+    - name: "motion_detected_in_last_hour_gora"
+      state: "{{ is_state('binary_sensor.motion_detected_gora', 'on') }}"
+      device_class: motion
+      delay_off: "01:00:00"
+    - name: "motion_detected_in_10_minutes_gora"
+      state: "{{ is_state('binary_sensor.motion_detected_gora', 'on') }}"
+      device_class: motion
+      delay_off: "00:10:00"
+    - name: "activity_in_garaz"
+      state: "{{ is_state('binary_sensor.garaz', 'on')}}"
+      delay_off: "00:01:00"
+      device_class: motion
+    - name: "activity_in_kotlownia"
+      state: "{{ is_state('binary_sensor.pokStasia', 'on')}}"
+      delay_off: "00:01:00"
+      device_class: motion
+    - name: "motion_detected_garaz"
+      state: "{{ is_state('binary_sensor.activity_in_garaz', 'on') or is_state('binary_sensor.activity_in_kotlownia', 'on')}}"
+      device_class: motion
+    - name: "motion_detected_in_last_hour_garaz"
+      state: "{{ is_state('binary_sensor.motion_detected_garaz', 'on') or is_state('binary_sensor.activity_in_kotlownia', 'on') }}"
+      device_class: motion
+      delay_off: "01:00:00"
+    - name: "motion_detected_in_10_minutes_garaz"
+      state: "{{ is_state('binary_sensor.motion_detected_garaz', 'on') or is_state('binary_sensor.activity_in_kotlownia', 'on') }}"
+      device_class: motion
+      delay_off: "00:01:00"
+
+
+
+
+shelly:
+
+# Example configuration.yaml entry
+satel_integra:
+  host: 192.168.0.31
+  port: 7092
+  partitions:
+    01:
+      name: "Parter"
+      arm_home_mode: 1
+    02:
+      name: "Pietro"
+      arm_home_mode: 1
+    03:
+      name: "Garaz"
+      arm_home_mode: 1
+  zones:
+    01:
+      name: "wejscie"
+      type: "motion"
+    02:
+      name: "kuchnia"
+      type: "motion"
+    03:
+      name: "salon"
+      type: "motion"
+    04:
+      name: "salon2"
+      type: "motion"
+    05:
+      name: "gabinet"
+      type: "motion"
+    08:
+      name: "hol1p"
+      type: "motion"
+    09:
+      name: "pok1p"
+      type: "motion"
+    10:
+      name: "pokStasia"
+      type: "motion"
+    11:
+      name: "sypialnia"
+      type: "motion"
+    06:
+      name: "garaz"
+      type: "motion"
+    07:
+      name: "kotlownia"
+      type: "motion"
+
+influxdb:
+  username: homeassistant
+  password: ha
+  max_retries: 3
+  default_measurement: state
+
+sensor:
+  - platform: scrape
+    resource: https://www.sunnyportal.com/Templates/PublicPage.aspx?page=c9298cde-2a49-4c57-8c55-97f67fe37b10
+    select: 'div[data-name="pvEnergy"] span.mainValueAmount'
+    name: "PVTodayValue"
+  - platform: scrape
+    resource: https://www.sunnyportal.com/Templates/PublicPage.aspx?page=c9298cde-2a49-4c57-8c55-97f67fe37b10
+    select: 'div[data-name="pvPower"] .mainValueAmount'
+    name: "PVCurrentValue"
+  - platform: scrape
+    resource: https://www.sunnyportal.com/Templates/PublicPage.aspx?page=c9298cde-2a49-4c57-8c55-97f67fe37b10
+    select: "span#ctl00_ContentPlaceHolder1_PublicPagePlaceholder1_PageUserControl_ctl00_PublicPageLoadFixPage_energyYieldWidget_energyYieldTotalValue"
+    name: "PVTotal"
+
+frontend:
+  themes: !include_dir_merge_named themes
+
+http:
+  ssl_certificate: /ssl/fullchain.pem
+  ssl_key: /ssl/privkey.pem
+
+camera:
+  - platform: mjpeg
+    name: Wjazd
+    mjpeg_url: http://192.168.0.25:65001/ISAPI/Streaming/channels/102/httppreview
+    username: admin
+    password: password
+  - platform: mjpeg
+    name: Wejscie
+    mjpeg_url: http://192.168.0.25:65002/ISAPI/Streaming/channels/102/httppreview
+    username: admin
+    password: password
+  - platform: mjpeg
+    name: Garaz tyl
+    mjpeg_url: http://192.168.0.25:65003/ISAPI/Streaming/channels/102/httppreview
+    username: admin
+    password: password
+  - platform: mjpeg
+    name: Ogrod
+    mjpeg_url: http://192.168.0.25:65004/ISAPI/Streaming/channels/102/httppreview
+    username: admin
+    password: password
