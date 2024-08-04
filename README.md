@@ -1,5 +1,7 @@
 # HA-Config
 
+This is Home Assistant configuration sohwcasing possibilities of HA integrating with multiple popular vendors.
+
 ## Functions supported:
 
 ### automations.yaml
